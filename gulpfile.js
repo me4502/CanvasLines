@@ -6,5 +6,5 @@ gulp.src('src/lines.js')
     .pipe(babel({
         presets: ['env']
     }))
-    .pipe(gulp.dest('static/js'))
+    .pipe(gulp.dest('docs/js'))
 );
