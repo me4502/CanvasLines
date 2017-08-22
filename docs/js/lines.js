@@ -40,7 +40,7 @@ nodes.push(secondNode);
 var canvas = document.getElementById("mainCanvas");
 var ctx = canvas.getContext("2d");
 
-function onChange() {
+function fullRedraw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.imageSmoothingEnabled = true;
     var lineargradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
@@ -56,10 +56,24 @@ function onChange() {
     }
 }
 
+function drawChanged(newNodes) {
+    var lineargradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+    lineargradient.addColorStop(0, '#d3f5ff');
+    lineargradient.addColorStop(1, '#00ffae');
+    ctx.strokeStyle = lineargradient;
+    for (var i = 0; i < newNodes.length; i++) {
+        for (var j = 0; j < newNodes[i].nodes.length; j++) {
+            ctx.moveTo(newNodes[i].x, newNodes[i].y);
+            ctx.lineTo(newNodes[i].nodes[j].x, newNodes[i].nodes[j].y);
+            ctx.stroke();
+        }
+    }
+}
+
 function resizeCanvas() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-    onChange();
+    fullRedraw();
 }
 
 resizeCanvas();
@@ -72,7 +86,7 @@ canvas.addEventListener("click", function (e) {
         closestNodes.push(nodes[i]);
 
         if (closestNodes.length > 3) {
-            var furtherestDistance = 99999999;
+            var furtherestDistance = 0;
             var furtherestNode = -1;
             for (var j = 0; j < closestNodes.length; j++) {
                 var currentDistance = Math.pow(newNode.x - closestNodes[j].x, 2) + Math.pow(newNode.y - closestNodes[j].y, 2);
@@ -92,5 +106,5 @@ canvas.addEventListener("click", function (e) {
         newNode.addNode(closestNodes[_i]);
     }
     nodes.push(newNode);
-    onChange();
+    drawChanged([newNode]);
 });
