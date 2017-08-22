@@ -1,1 +1,110 @@
-"use strict";var _createClass=function(){function a(a,b){for(var c,d=0;d<b.length;d++)c=b[d],c.enumerable=c.enumerable||!1,c.configurable=!0,"value"in c&&(c.writable=!0),Object.defineProperty(a,c.key,c)}return function(b,c,d){return c&&a(b.prototype,c),d&&a(b,d),b}}();function _classCallCheck(a,b){if(!(a instanceof b))throw new TypeError("Cannot call a class as a function")}var Node=function(){function a(b,c){_classCallCheck(this,a),this.x=b,this.y=c,this.nodeList=[]}return _createClass(a,[{key:"addNode",value:function addNode(a){this.nodeList.push(a)}},{key:"nodes",get:function get(){return this.nodeList}}]),a}(),nodes=[],startNode=new Node(window.innerWidth/2-10,window.innerHeight/2-10),secondNode=new Node(window.innerWidth/2+10,window.innerHeight/2+10);startNode.addNode(secondNode),nodes.push(startNode),nodes.push(secondNode);var canvas=document.getElementById("mainCanvas"),ctx=canvas.getContext("2d");function fullRedraw(){ctx.clearRect(0,0,canvas.width,canvas.height),ctx.imageSmoothingEnabled=!0;var a=ctx.createLinearGradient(0,0,canvas.width,canvas.height);a.addColorStop(0,"#d3f5ff"),a.addColorStop(1,"#00ffae"),ctx.strokeStyle=a;for(var b=0;b<nodes.length;b++)for(var c=0;c<nodes[b].nodes.length;c++)ctx.moveTo(nodes[b].x,nodes[b].y),ctx.lineTo(nodes[b].nodes[c].x,nodes[b].nodes[c].y),ctx.stroke()}function drawChanged(a){var b=ctx.createLinearGradient(0,0,canvas.width,canvas.height);b.addColorStop(0,"#d3f5ff"),b.addColorStop(1,"#00ffae"),ctx.strokeStyle=b;for(var c=0;c<a.length;c++)for(var d=0;d<a[c].nodes.length;d++)ctx.moveTo(a[c].x,a[c].y),ctx.lineTo(a[c].nodes[d].x,a[c].nodes[d].y),ctx.stroke()}function resizeCanvas(){canvas.width=window.innerWidth,canvas.height=window.innerHeight,fullRedraw()}resizeCanvas(),window.addEventListener("resize",resizeCanvas,!1),canvas.addEventListener("click",function(a){for(var b=Math.pow,c=new Node(a.clientX,a.clientY),d=[],e=0;e<nodes.length;e++)if(d.push(nodes[e]),3<d.length){for(var f,g=0,h=-1,i=0;i<d.length;i++)f=b(c.x-d[i].x,2)+b(c.y-d[i].y,2),-1==h?(h=i,g=f):f>g&&(g=f,h=i);d.splice(furtherestNode,1)}for(var j=0;j<closestNodes.length;j++)newNode.addNode(closestNodes[j]);nodes.push(newNode),drawChanged([newNode])});
+"use strict";
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Node = function () {
+    function Node(x, y) {
+        _classCallCheck(this, Node);
+
+        this.x = x;
+        this.y = y;
+        this.nodeList = [];
+    }
+
+    _createClass(Node, [{
+        key: "addNode",
+        value: function addNode(node) {
+            this.nodeList.push(node);
+        }
+    }, {
+        key: "nodes",
+        get: function get() {
+            return this.nodeList;
+        }
+    }]);
+
+    return Node;
+}();
+
+var nodes = [];
+
+var startNode = new Node(window.innerWidth / 2 - 10, window.innerHeight / 2 - 10);
+var secondNode = new Node(window.innerWidth / 2 + 10, window.innerHeight / 2 + 10);
+startNode.addNode(secondNode);
+
+nodes.push(startNode);
+nodes.push(secondNode);
+
+var canvas = document.getElementById("mainCanvas");
+var ctx = canvas.getContext("2d");
+
+function fullRedraw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.imageSmoothingEnabled = true;
+    var lineargradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+    lineargradient.addColorStop(0, '#d3f5ff');
+    lineargradient.addColorStop(1, '#00ffae');
+    ctx.strokeStyle = lineargradient;
+    for (var i = 0; i < nodes.length; i++) {
+        for (var j = 0; j < nodes[i].nodes.length; j++) {
+            ctx.moveTo(nodes[i].x, nodes[i].y);
+            ctx.lineTo(nodes[i].nodes[j].x, nodes[i].nodes[j].y);
+            ctx.stroke();
+        }
+    }
+}
+
+function drawChanged(newNodes) {
+    var lineargradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+    lineargradient.addColorStop(0, '#d3f5ff');
+    lineargradient.addColorStop(1, '#00ffae');
+    ctx.strokeStyle = lineargradient;
+    for (var i = 0; i < newNodes.length; i++) {
+        for (var j = 0; j < newNodes[i].nodes.length; j++) {
+            ctx.moveTo(newNodes[i].x, newNodes[i].y);
+            ctx.lineTo(newNodes[i].nodes[j].x, newNodes[i].nodes[j].y);
+            ctx.stroke();
+        }
+    }
+}
+
+function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    fullRedraw();
+}
+
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas, false);
+
+canvas.addEventListener("click", function (e) {
+    var newNode = new Node(e.clientX, e.clientY);
+    var closestNodes = [];
+    for (var i = 0; i < nodes.length; i++) {
+        closestNodes.push(nodes[i]);
+
+        if (closestNodes.length > 3) {
+            var furtherestDistance = 0;
+            var furtherestNode = -1;
+            for (var j = 0; j < closestNodes.length; j++) {
+                var currentDistance = Math.pow(newNode.x - closestNodes[j].x, 2) + Math.pow(newNode.y - closestNodes[j].y, 2);
+                if (furtherestNode === -1) {
+                    furtherestNode = j;
+                    furtherestDistance = currentDistance;
+                } else if (currentDistance > furtherestDistance) {
+                    furtherestDistance = currentDistance;
+                    furtherestNode = j;
+                }
+            }
+
+            closestNodes.splice(furtherestNode, 1);
+        }
+    }
+    for (var _i = 0; _i < closestNodes.length; _i++) {
+        newNode.addNode(closestNodes[_i]);
+    }
+    nodes.push(newNode);
+    drawChanged([newNode]);
+});

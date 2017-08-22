@@ -4,7 +4,7 @@ const babel = require('gulp-babel');
 gulp.task('default', () =>
 gulp.src('src/lines.js')
     .pipe(babel({
-        presets: ['es2015', 'minify']
+        presets: ['env']
     }))
     .pipe(gulp.dest('docs/js'))
 );
